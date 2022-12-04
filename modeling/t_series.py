@@ -202,24 +202,34 @@ class T_Series:
             self.growth = False
             print('***No growth! Execution terminated')
             return
-        else:
-            self.growth = True
-            # We have growth so calculate growth rate
-            # per unit time and its spline smoothing,
-            # needed for initial guess during fitting.
-            # Both are collected under sub-class r
-            self.r = SN(
-                        data = np.gradient(self.data, self.time)/self.data
-                       )
-            self.r.spline = UnivariateSpline(self.time, self.r.data)(self.time)
-            if verbose:
-                # info from MK-test for hindering:
-                trend_test(self.r.data, 'decline',
-                           data_id='growth rate',
-                           verbose=verbose, alpha=alpha_MK)[0]
-                trend_test(self.r.spline, 'decline',
-                           data_id='growth-rate spline',
-                           verbose=verbose, alpha=alpha_MK)[0]
+
+        self.growth = True
+        # We have growth so calculate growth rate
+        # per unit time and its spline smoothing,
+        # needed for initial guess during fitting.
+        # Both are collected under sub-class r
+        self.r = SN(
+                    data = np.gradient(self.data, self.time)/self.data
+                   )
+        self.r.spline = UnivariateSpline(self.time, self.r.data)(self.time)
+
+        #Exclude accelerated growth:
+        accelerated = (trend_test(self.r.data, 'growth')[0] or
+                       trend_test(self.r.spline, 'growth')[0]
+                      )
+        self.accelerated = accelerated
+        if accelerated:
+            print('***Accelerated growth! Execution terminated')
+            return
+
+        if verbose:
+            # info from MK-test for hindering:
+            trend_test(self.r.data, 'decline',
+                       data_id='growth rate',
+                       verbose=verbose, alpha=alpha_MK)[0]
+            trend_test(self.r.spline, 'decline',
+                       data_id='growth-rate spline',
+                       verbose=verbose, alpha=alpha_MK)[0]
 
 
     def data_overvu(self):
@@ -260,6 +270,10 @@ class T_Series:
 
         if not self.growth:
             print('***No growth! Execution terminated')
+            return
+
+        if self.accelerated:
+            print('***Accelerated growth! Execution terminated')
             return
 
         from .fitting import get_fits
