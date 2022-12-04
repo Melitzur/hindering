@@ -278,8 +278,8 @@ class T_Series:
 
         from .fitting import get_fits
         fits = get_fits(self, sigma_is,
-                         max_nk, alpha_F,
-                         verbose)
+                        max_nk, alpha_F,
+                        verbose)
 
         self.fits = fits
         return fits[0] # best fit
