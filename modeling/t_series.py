@@ -226,15 +226,6 @@ class T_Series:
             no = '' if hindering else 'no '
             print(f'Growth rate gives {no}indication for hindering')
 
-            '''
-            trend_test(self.r.data, 'decline',
-                       data_id='growth rate',
-                       verbose=verbose, alpha=alpha_MK)[0]
-            trend_test(self.r.spline, 'decline',
-                       data_id='growth-rate spline',
-                       verbose=verbose, alpha=alpha_MK)[0]
-            '''
-
 
     def data_overvu(self):
         unit = self.info.unit
