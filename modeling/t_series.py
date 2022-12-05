@@ -214,9 +214,7 @@ class T_Series:
         self.r.spline = UnivariateSpline(self.time, self.r.data)(self.time)
 
         #Exclude accelerated growth:
-        accelerated = (trend_test(self.r.data, 'growth')[0] or
-                       trend_test(self.r.spline, 'growth')[0]
-                      )
+        accelerated = trend_test(self.r.data, 'growth')[0]
         self.accelerated = accelerated
         if accelerated:
             print('***Accelerated growth! Execution terminated')
@@ -224,12 +222,18 @@ class T_Series:
 
         if verbose:
             # info from MK-test for hindering:
+            hindering = trend_test(self.r.data, 'decline')[0]
+            no = '' if hindering else 'no '
+            print(f'Growth rate gives {no}indication for hindering')
+
+            '''
             trend_test(self.r.data, 'decline',
                        data_id='growth rate',
                        verbose=verbose, alpha=alpha_MK)[0]
             trend_test(self.r.spline, 'decline',
                        data_id='growth-rate spline',
                        verbose=verbose, alpha=alpha_MK)[0]
+            '''
 
 
     def data_overvu(self):
